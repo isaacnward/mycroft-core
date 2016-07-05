@@ -81,7 +81,7 @@ class TimeSkill(MycroftSkill):
         self.emitter.once("recognizer_loop:audio_output_start",
                           self.enclosure.mouth_text(time_formatted))
         self.speak("It is currently " + time_formatted)
-        time.sleep(3)
+        time.sleep(6)
         self.enclosure.activate_mouth_listeners(True)
         self.enclosure.mouth_reset()
 
