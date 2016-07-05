@@ -45,12 +45,17 @@ class TimeSkill(MycroftSkill):
 
         self.register_intent(intent, self.handle_intent)
 
-    def get_time_format(self, convert_time):
-
-        if self.format == '12h':
-            current_time = datetime.date.strftime(convert_time, "%I:%M, %p")
+    def get_time_format(self, convert_time, display):
+        if not display:
+            if self.format == '12h':
+                current_time = datetime.date.strftime(convert_time, "%I:%M, %p")
+            else:
+                current_time = datetime.date.strftime(convert_time, "%H:%M ")
         else:
-            current_time = datetime.date.strftime(convert_time, "%H:%M ")
+            if self.format == '12h':
+                current_time = datetime.date.strftime(convert_time, "%I:%M %p")
+            else:
+                current_time = datetime.date.strftime(convert_time, "%H:%M ")
         return current_time
 
     def get_timezone(self, locale):
@@ -76,10 +81,11 @@ class TimeSkill(MycroftSkill):
                 self.speak("I could not find the timezone for " + location)
                 return
         time_value = now.astimezone(tz)
-        time_formatted = self.get_time_format(time_value)
+        time_formatted = self.get_time_format(time_value, False)
+        time_display = self.get_time_format(time_value, True)
         self.enclosure.activate_mouth_listeners(False)
         self.emitter.once("recognizer_loop:audio_output_start",
-                          self.enclosure.mouth_text(time_value))
+                          self.enclosure.mouth_text(time_display))
         self.speak("It is currently " + time_formatted)
         time.sleep(6)
         self.enclosure.activate_mouth_listeners(True)
