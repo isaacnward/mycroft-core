@@ -16,6 +16,7 @@
 # along with Mycroft Core.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import time
 import datetime
 from os.path import dirname, join
 
@@ -74,9 +75,16 @@ class TimeSkill(MycroftSkill):
             if not tz:
                 self.speak("I could not find the timezone for " + location)
                 return
-
         time_value = now.astimezone(tz)
-        self.speak("It is currently " + self.get_time_format(time_value))
+        time_formatted = self.get_time_format(time_value)
+        self.enclosure.activate_mouth_listeners(False)
+        self.emitter.once("recognizer_loop:audio_output_start",
+                          self.enclosure.mouth_text(time_formatted))
+        self.speak("It is currently " + time_formatted)
+        time.sleep(3)
+        self.enclosure.activate_mouth_listeners(True)
+        self.enclosure.mouth_reset()
+
 
     def stop(self):
         pass
